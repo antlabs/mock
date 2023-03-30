@@ -34,7 +34,6 @@ func String() (s string, err error) {
 	return fmt.Sprintf("%x", p), nil
 }
 
-// 优化下面的代码
 func Lower() (s string, err error) {
 
 	b, err := String()
