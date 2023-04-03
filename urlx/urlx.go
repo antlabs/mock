@@ -79,7 +79,7 @@ func Query() string {
 
 // 随机生成一个协议
 func Protocol() string {
-	index := integer.IntegerRange(0, 1)
+	index := integer.IntegerRangeInt(0, 1)
 	return PROTOCOLS[index]
 }
 
@@ -90,7 +90,7 @@ func Domain() string {
 
 // 随机生成一个路径
 func Path() (path string) {
-	index := integer.IntegerRange(1, 100)
+	index := integer.IntegerRangeInt(1, 100)
 	var out strings.Builder
 	for i := 0; i < index; i++ {
 		if i != 0 {

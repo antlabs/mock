@@ -6,5 +6,5 @@ import (
 
 // 生成一个随机布尔值
 func Boolean() bool {
-	return integer.IntegerRange(0, 1) == 1
+	return integer.IntegerRangeInt(0, 1) == 1
 }

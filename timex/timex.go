@@ -37,7 +37,11 @@ func defaultOptions(opts *options) {
 
 // 随便生成一个时间字符串，符合rfc3339格式
 // 默认min是当前时间，max是当前时间+100年以内
-func TimeRFC3339(o ...Option) string {
+func TimeRFC3339String(o ...Option) string {
+	return TimeRFC3339(o...).Format(time.RFC3339)
+}
+
+func TimeRFC3339(o ...Option) time.Time {
 	opts := &options{}
 	for _, opt := range o {
 		opt(opts)
@@ -45,8 +49,8 @@ func TimeRFC3339(o ...Option) string {
 
 	defaultOptions(opts)
 
-	n := int64(integer.IntegerRange(int(opts.min), int(opts.max)))
-	return time.Unix(n, 0).Format(time.RFC3339)
+	n := int64(integer.IntegerRangeInt(int(opts.min), int(opts.max)))
+	return time.Unix(n, 0)
 }
 
 // 随机生成一个时间字符串，格式是yyyy
@@ -58,6 +62,6 @@ func Year(o ...Option) string {
 
 	defaultOptions(opts)
 
-	n := int64(integer.IntegerRange(int(opts.min), int(opts.max)))
+	n := int64(integer.IntegerRangeInt(int(opts.min), int(opts.max)))
 	return time.Unix(n, 0).Format("2006")
 }

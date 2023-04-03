@@ -1,6 +1,7 @@
 package integer
 
 import (
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -25,6 +26,9 @@ func IntegerRangeUint(min, max uint) uint {
 	defer mux.Unlock()
 
 	n := max - min
+	if n <= 0 {
+		panic(fmt.Sprintf("IntegerRangeUint:max:%d-min:%d", max, min))
+	}
 	return uint(intRnd.Intn(int(n))) + min
 }
 
