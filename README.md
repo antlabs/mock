@@ -1,5 +1,5 @@
 # mock
-生成mock数据，每一个大版本使用反射填充数据。
+生成mock数据，第一个大版本使用反射填充数据。
 ## install
 ```
 go get github.com/antlabs/mock
