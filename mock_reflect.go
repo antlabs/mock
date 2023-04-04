@@ -23,7 +23,7 @@ func MockData(x any, opts ...Option) error {
 	}
 
 	defaultOptions(opt)
-	return mockData(reflect.ValueOf(x), opt)
+	return mockData(reflect.ValueOf(x), reflect.StructField{}, opt)
 }
 
 func defaultOptions(opt *Options) {
@@ -36,11 +36,15 @@ func defaultOptions(opt *Options) {
 	}
 }
 
-func mockData(v reflect.Value, opt *Options) error {
+func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 	switch v.Kind() {
 	// 指针类型，需要先获取指针指向的值
 	case reflect.Ptr:
-		return mockData(v.Elem(), opt)
+		if v.IsNil() {
+			v.Set(reflect.New(v.Type().Elem()))
+		}
+
+		return mockData(v.Elem(), sf, opt)
 		// 结构体类型，需要遍历结构体的所有字段
 	case reflect.Struct:
 		// 如果是time.Time类型，直接返回当前时间
@@ -56,7 +60,7 @@ func mockData(v reflect.Value, opt *Options) error {
 				continue
 			}
 
-			if err := mockData(v.Field(i), opt); err != nil {
+			if err := mockData(v.Field(i), sf, opt); err != nil {
 				return err
 			}
 
@@ -68,19 +72,53 @@ func mockData(v reflect.Value, opt *Options) error {
 			return nil
 		}
 
+		// 随机生成一个长度
+		l := integer.IntegerRangeInt(int(opt.MinLen), int(opt.MaxLen))
+		// 如果是slice类型，那么就需要扩容
+		if reflect.Slice == v.Kind() {
+			v.Set(reflect.MakeSlice(v.Type(), l, l))
+		}
+
 		for i := 0; i < v.Len(); i++ {
-			if err := mockData(v.Index(i), opt); err != nil {
+			if err := mockData(v.Index(i), sf, opt); err != nil {
 				return err
 			}
 		}
 
 		// map类型，需要遍历map的所有key
 	case reflect.Map:
-		for _, key := range v.MapKeys() {
-			if err := mockData(v.MapIndex(key), opt); err != nil {
+		if v.Len() > 0 {
+			return nil
+		}
+
+		// 随机生成map的长度
+		minLen := opt.MinLen
+		if minLen == 0 {
+			minLen = 1
+		}
+
+		l := integer.IntegerRangeInt(int(minLen), int(opt.MaxLen))
+		// 创建一个map
+		v.Set(reflect.MakeMapWithSize(v.Type(), l))
+		// 遍历map的所有key
+
+		for i := 0; i < l; i++ {
+			// 创建一个key
+			key := reflect.New(v.Type().Key()).Elem()
+			// 创建一个value
+			value := reflect.New(v.Type().Elem()).Elem()
+			// 递归mock key
+			if err := mockData(key, sf, opt); err != nil {
 				return err
 			}
+			// 递归mock value
+			if err := mockData(value, sf, opt); err != nil {
+				return err
+			}
+			// 设置map的key和value
+			v.SetMapIndex(key, value)
 		}
+
 		// 接口类型，需要先获取接口的值
 	case reflect.Interface:
 		// float32, float64 类型
@@ -98,12 +136,19 @@ func mockData(v reflect.Value, opt *Options) error {
 		v.SetUint(uint64(u))
 		// string 类型
 	case reflect.String:
-		// 获取字段名
-		name := v.Type().Name()
+		// 获取字段变量名
+		name := sf.Name
+
 		// 如果字段名是ID，那么就生成一个uuid
 		// 忽略大小写搜索id
 		if strings.Contains(strings.ToLower(name), "id") {
 			v.SetString(gid.GID())
+			return nil
+		}
+
+		// 如果字段名是Time，那么就随机生成一个时间
+		if strings.Contains(strings.ToLower(name), "time") {
+			v.SetString(timex.TimeRFC3339String(timex.WithMin(opt.Min), timex.WithMax(opt.Max)))
 			return nil
 		}
 
