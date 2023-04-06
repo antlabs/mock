@@ -1,7 +1,8 @@
 # mock
-生成mock数据，第一个大版本使用反射填充数据。   
 [![Go](https://github.com/antlabs/mock/workflows/Go/badge.svg)](https://github.com/antlabs/mock/actions)
 [![codecov](https://codecov.io/gh/antlabs/mock/branch/master/graph/badge.svg)](https://codecov.io/gh/antlabs/mock)
+
+生成mock数据，第一个大版本使用反射填充数据。   
 ## install
 ```
 go get github.com/antlabs/mock
