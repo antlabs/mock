@@ -6,5 +6,5 @@ import (
 )
 
 func TestString(t *testing.T) {
-	fmt.Println(String())
+	fmt.Println(StringRange(10, 10))
 }

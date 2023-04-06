@@ -32,7 +32,7 @@ func StringRange(min, max int) (s string, err error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%x", p), nil
+	return fmt.Sprintf("%x", p)[:n], nil
 
 }
 

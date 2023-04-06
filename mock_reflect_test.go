@@ -33,7 +33,7 @@ type AllTypes struct {
 }
 
 // 基础类型
-func Test_MockData(t *testing.T) {
+func Test_MockDataBasic(t *testing.T) {
 	var a AllTypes
 	MockData(&a)
 	all, err := json.Marshal(&a)
@@ -72,6 +72,18 @@ func Test_MockData2(t *testing.T) {
 	var a ReferenceType
 	MockData(&a)
 	all, err := json.Marshal(&a)
+	assert.NoError(t, err)
+	fmt.Printf("%s\n", all)
+}
+
+type TestEmail struct {
+	Email string
+}
+
+func Test_MockEmail(t *testing.T) {
+	e := TestEmail{}
+	MockData(&e)
+	all, err := json.Marshal(&e)
 	assert.NoError(t, err)
 	fmt.Printf("%s\n", all)
 }

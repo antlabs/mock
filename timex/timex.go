@@ -53,6 +53,11 @@ func TimeRFC3339(o ...Option) time.Time {
 	return time.Unix(n, 0)
 }
 
+// 随机生成一个时间字符串，格式是yyyy-MM-dd
+func YYYYMMDD(o ...Option) string {
+	return TimeRFC3339(o...).Format("20060102")
+}
+
 // 随机生成一个时间字符串，格式是yyyy
 func Year(o ...Option) string {
 	opts := &options{}

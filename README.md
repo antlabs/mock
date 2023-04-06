@@ -15,6 +15,7 @@ type Person struct {
 	Name    string
 	Age     int
 	Address Address
+  Email string
 }
 
 type Address struct {

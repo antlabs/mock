@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/antlabs/mock/email"
 	"github.com/antlabs/mock/gid"
 	"github.com/antlabs/mock/integer"
 	"github.com/antlabs/mock/stringx"
@@ -152,6 +153,15 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 			return nil
 		}
 
+		// 如果字段名是email，那么就随机生成一个email
+		if strings.Contains(strings.ToLower(name), "email") {
+			e, err := email.Email()
+			if err != nil {
+				return err
+			}
+			v.SetString(e)
+			return nil
+		}
 		s, err := stringx.StringRange(opt.MinLen, opt.MaxLen)
 		if err != nil {
 			return err
