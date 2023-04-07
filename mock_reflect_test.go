@@ -65,6 +65,10 @@ type ReferenceType struct {
 	MyTypeP     *MyType
 	CreateTime  string
 	PointerList []*int
+	Email       string
+	URL         string
+	UserName    string
+	NickName    string
 }
 
 // 复合类型的测试
@@ -83,6 +87,23 @@ type TestEmail struct {
 func Test_MockEmail(t *testing.T) {
 	e := TestEmail{}
 	MockData(&e)
+	all, err := json.Marshal(&e)
+	assert.NoError(t, err)
+	fmt.Printf("%s\n", all)
+}
+
+type Test_MinMaxLenByField struct {
+	S     string
+	Slice []int
+}
+
+func TestMinMaxLenByField(t *testing.T) {
+	e := Test_MinMaxLenByField{}
+	MockData(&e, WithMinMaxLenByField("S", 10, 20), WithMinMaxLenByField("Slice", 10, 20))
+	// 检查下生成的长度是否在10-20之间
+	assert.True(t, len(e.S) >= 10 && len(e.S) <= 20)
+	assert.True(t, len(e.Slice) >= 10 && len(e.S) <= 20)
+
 	all, err := json.Marshal(&e)
 	assert.NoError(t, err)
 	fmt.Printf("%s\n", all)

@@ -8,8 +8,10 @@ import (
 	"github.com/antlabs/mock/email"
 	"github.com/antlabs/mock/gid"
 	"github.com/antlabs/mock/integer"
+	"github.com/antlabs/mock/name"
 	"github.com/antlabs/mock/stringx"
 	"github.com/antlabs/mock/timex"
+	"github.com/antlabs/mock/urlx"
 )
 
 // 通过反射的方式，对任意类型的数据进行mock
@@ -74,7 +76,13 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 		}
 
 		// 随机生成一个长度
-		l := integer.IntegerRangeInt(int(opt.MinLen), int(opt.MaxLen))
+		l := 0
+		if _, ok := opt.MinMaxLenByField[sf.Name]; ok {
+			l = integer.IntegerRangeInt(int(opt.MinMaxLenByField[sf.Name].MinLen), int(opt.MinMaxLenByField[sf.Name].MaxLen))
+		} else {
+			l = integer.IntegerRangeInt(int(opt.MinLen), int(opt.MaxLen))
+		}
+
 		// 如果是slice类型，那么就需要扩容
 		if reflect.Slice == v.Kind() {
 			v.Set(reflect.MakeSlice(v.Type(), l, l))
@@ -98,7 +106,13 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 			minLen = 1
 		}
 
-		l := integer.IntegerRangeInt(int(minLen), int(opt.MaxLen))
+		l := 0
+		if _, ok := opt.MinMaxLenByField[sf.Name]; ok {
+			l = integer.IntegerRangeInt(int(opt.MinMaxLenByField[sf.Name].MinLen), int(opt.MinMaxLenByField[sf.Name].MaxLen))
+		} else {
+			l = integer.IntegerRangeInt(int(opt.MinLen), int(opt.MaxLen))
+		}
+
 		// 创建一个map
 		v.Set(reflect.MakeMapWithSize(v.Type(), l))
 		// 遍历map的所有key
@@ -138,23 +152,42 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 		// string 类型
 	case reflect.String:
 		// 获取字段变量名
-		name := sf.Name
+		fieldName := sf.Name
+
+		// TODO 优化成map查表函数
+		if strings.Contains(strings.ToLower(fieldName), "url") {
+			v.SetString(urlx.URL())
+			return nil
+		}
+
+		// 如果字段名是Name，那么就随机生成一个名字
+		if strings.Contains(strings.ToLower(fieldName), "username") {
+			// TODO 需要修改
+			v.SetString(name.Name(name.WithChinese()))
+			return nil
+		}
+
+		// 昵称
+		if strings.Contains(strings.ToLower(fieldName), "nickname") {
+			v.SetString(name.Name(name.WithChinese()))
+			return nil
+		}
 
 		// 如果字段名是ID，那么就生成一个uuid
 		// 忽略大小写搜索id
-		if strings.Contains(strings.ToLower(name), "id") {
+		if strings.Contains(strings.ToLower(fieldName), "id") {
 			v.SetString(gid.GID())
 			return nil
 		}
 
 		// 如果字段名是Time，那么就随机生成一个时间
-		if strings.Contains(strings.ToLower(name), "time") {
+		if strings.Contains(strings.ToLower(fieldName), "time") {
 			v.SetString(timex.TimeRFC3339String(timex.WithMin(opt.Min), timex.WithMax(opt.Max)))
 			return nil
 		}
 
 		// 如果字段名是email，那么就随机生成一个email
-		if strings.Contains(strings.ToLower(name), "email") {
+		if strings.Contains(strings.ToLower(fieldName), "email") {
 			e, err := email.Email()
 			if err != nil {
 				return err
@@ -162,6 +195,16 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 			v.SetString(e)
 			return nil
 		}
+
+		if _, ok := opt.MinMaxLenByField[sf.Name]; ok {
+			s, err := stringx.StringRange(opt.MinMaxLenByField[sf.Name].MinLen, opt.MinMaxLenByField[sf.Name].MaxLen)
+			if err != nil {
+				return err
+			}
+			v.SetString(s)
+			return nil
+		}
+
 		s, err := stringx.StringRange(opt.MinLen, opt.MaxLen)
 		if err != nil {
 			return err
