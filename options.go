@@ -19,6 +19,8 @@ type Options struct {
 	Min int64
 	// 指定字段名，生成最大长度
 	MinMaxLenByField map[string]MinMax
+	// country 用中文还是英文
+	CountryChina bool
 }
 
 type Option func(*Options)
@@ -55,5 +57,12 @@ func WithMax(max int64) Option {
 func WithMin(min int64) Option {
 	return func(o *Options) {
 		o.Min = min
+	}
+}
+
+// 设置country为中文
+func WithCountryEn() Option {
+	return func(o *Options) {
+		o.CountryChina = true
 	}
 }

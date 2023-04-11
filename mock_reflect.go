@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/antlabs/mock/country"
 	"github.com/antlabs/mock/email"
 	"github.com/antlabs/mock/gid"
 	"github.com/antlabs/mock/integer"
@@ -193,6 +194,12 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 				return err
 			}
 			v.SetString(e)
+			return nil
+		}
+
+		// 如果字段是country, 那么就随机生成一个国家
+		if strings.Contains(strings.ToLower(fieldName), "country") {
+			v.SetString(country.Country(opt.CountryChina))
 			return nil
 		}
 

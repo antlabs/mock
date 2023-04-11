@@ -69,6 +69,7 @@ type ReferenceType struct {
 	URL         string
 	UserName    string
 	NickName    string
+	Country     string
 }
 
 // 复合类型的测试
