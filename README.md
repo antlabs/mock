@@ -129,7 +129,7 @@ func TestMinMaxLenByField(t *testing.T) {
 ```go
 var a ReferenceType
 image := []string{"image.xxx.com/1.headpic", "image.xxx.com/2.headpic", "image.xxx.com/3.headpic"}
-err := mock.MockData(&a, WithContainsFieldSourceString("HeadPic", image))
+err := mock.MockData(&a, mock.WithContainsFieldSourceString("HeadPic", image))
 ```
 ### 3.3 设置为英文
 ```go
