@@ -9,6 +9,8 @@ type MinMax struct {
 }
 
 type Options struct {
+	// 指定字段名，指定生成的数据来源
+	StringSource map[string][]string
 	// 生成的mock数据的最大长度
 	MaxLen int
 	// 生成的mock数据的最小长度
@@ -36,33 +38,48 @@ func WithMinMaxLenByField(field string, minLen int, maxLen int) Option {
 	}
 }
 
+// 设置最大长度
 func WithMaxLen(maxLen int) Option {
 	return func(o *Options) {
 		o.MaxLen = maxLen
 	}
 }
 
+// 设置最小长度
 func WithMinLen(minLen int) Option {
 	return func(o *Options) {
 		o.MinLen = minLen
 	}
 }
 
+// 设置最大值
 func WithMax(max int64) Option {
 	return func(o *Options) {
 		o.Max = max
 	}
 }
 
+// 设置最小值
 func WithMin(min int64) Option {
 	return func(o *Options) {
 		o.Min = min
 	}
 }
 
-// 设置country为中文
+// 设置country为英文
 func WithCountryEn() Option {
 	return func(o *Options) {
 		o.CountryChina = true
+	}
+}
+
+// 包含field字符串，就会使用source中的数据, 字段比较是string类型
+func WithContainsFieldSourceString(field string, source []string) Option {
+	return func(o *Options) {
+		if o.StringSource == nil {
+			o.StringSource = make(map[string][]string)
+		}
+
+		o.StringSource[field] = source
 	}
 }

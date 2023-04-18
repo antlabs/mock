@@ -109,6 +109,7 @@ all, err := json.Marshal(&a)
 // }
 ```
 ## 三、WithXXX各种配置函数
+### 3.1 配置指定字段的数据生成范围`WithMinMaxLenByField`
 ```go
 type Test_MinMaxLenByField struct {
 	S     string
@@ -121,4 +122,36 @@ func TestMinMaxLenByField(t *testing.T) {
 	e := Test_MinMaxLenByField{}
 	mock.MockData(&e, mock.WithMinMaxLenByField("S", 10, 20), mock.WithMinMaxLenByField("Slice", 10, 20))
 }
+```
+
+### 3.2 配置指定字段的数据源`WithContainsFieldSourceString`
+指定HeadPic字段的，数据源。
+```go
+var a ReferenceType
+image := []string{"image.xxx.com/1.headpic", "image.xxx.com/2.headpic", "image.xxx.com/3.headpic"}
+err := mock.MockData(&a, WithContainsFieldSourceString("HeadPic", image))
+```
+### 3.3 设置为英文
+```go
+mock.WithCountryEn()
+
+```
+
+### 3.4 设置数据最大长度`WithMaxLen`
+```go
+mock.WithMaxLen()
+```
+
+### 3.5 设置数据最大长度`WithMinLen`
+```go
+mock.WithMaxLen()
+
+### 3.6 设置数值的最大值`WithMax`
+```
+mock.WithMax()
+```
+
+### 3.7 设置数值的最大值`WithMin`
+```
+mock.WithMin()
 ```

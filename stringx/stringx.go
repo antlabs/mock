@@ -5,12 +5,9 @@ import (
 	"math/rand"
 	"strings"
 	"sync"
-	"time"
-)
 
-func init() {
-	rand.Seed(time.Now().Unix())
-}
+	"github.com/antlabs/mock/integer"
+)
 
 const (
 	max = 512
@@ -24,62 +21,40 @@ var bytesPool = sync.Pool{
 }
 
 // 随机生成一个字符串, 范围在[min, max]之间
-func StringRange(min, max int) (s string, err error) {
-	n := rand.Int31n(int32(max-min+1)) + int32(min)
+func StringRange(min, max int, opts ...Option) (s string, err error) {
+	o := &Options{}
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	n := integer.IntegerRangeInt(min, max)
 	p := bytesPool.Get().([]byte)[:n]
 	defer bytesPool.Put(p)
-	if _, err := rand.Read(p); err != nil {
-		return "", err
+
+	// 指定数据来源
+	if len(o.Source) > 0 {
+
+		pos := integer.IntegerRangeInt(0, len(o.Source)-1)
+
+		s = o.Source[pos]
+		if len(s) > max {
+			s = s[:max]
+		}
+
+	} else {
+		// 随机生成
+		if _, err := rand.Read(p); err != nil {
+			return "", err
+		}
+		s = fmt.Sprintf("%x", p)[:n]
 	}
 
-	return fmt.Sprintf("%x", p)[:n], nil
-
-}
-
-// 随机生成一个小写字符串，长度在[min, max]之间
-func StringLowerRange(min, max int) (s string, err error) {
-	b, err := StringRange(min, max)
-	if err != nil {
-		return b, err
+	if o.ToUpper {
+		return strings.ToUpper(s), nil
 	}
 
-	return strings.ToLower(b), nil
-}
-
-// 随机生成一个字符串，长度在[1, 512]之间
-// String returns a random string of length between 1 and 512.
-func String() (s string, err error) {
-	return StringRange(min, max)
-}
-
-// 随机生成一个小写字符串，长度在[1, 512]之间
-func Lower() (s string, err error) {
-
-	b, err := String()
-	if err != nil {
-		return b, err
+	if o.ToUpper {
+		return strings.ToLower(s), nil
 	}
-
-	return strings.ToLower(b), nil
-}
-
-// 随机生成一个大写字符串，长度在[min, max]之间
-func StringUpperRange(min, max int) (s string, err error) {
-	b, err := StringRange(min, max)
-	if err != nil {
-		return b, err
-	}
-
-	return strings.ToUpper(b), nil
-}
-
-// 随机生成一个大写字符串，长度在[1, 512]之间
-func Upper() (s string, err error) {
-
-	b, err := String()
-	if err != nil {
-		return b, err
-	}
-
-	return strings.ToUpper(b), nil
+	return s, nil
 }

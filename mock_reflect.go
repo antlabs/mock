@@ -5,14 +5,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/antlabs/mock/country"
-	"github.com/antlabs/mock/email"
-	"github.com/antlabs/mock/gid"
 	"github.com/antlabs/mock/integer"
-	"github.com/antlabs/mock/name"
 	"github.com/antlabs/mock/stringx"
 	"github.com/antlabs/mock/timex"
-	"github.com/antlabs/mock/urlx"
 )
 
 // 通过反射的方式，对任意类型的数据进行mock
@@ -21,7 +16,7 @@ func MockData(x any, opts ...Option) error {
 		return nil
 	}
 
-	var opt = &Options{}
+	opt := &Options{}
 	for _, o := range opts {
 		o(opt)
 	}
@@ -111,7 +106,7 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 		if _, ok := opt.MinMaxLenByField[sf.Name]; ok {
 			l = integer.IntegerRangeInt(int(opt.MinMaxLenByField[sf.Name].MinLen), int(opt.MinMaxLenByField[sf.Name].MaxLen))
 		} else {
-			l = integer.IntegerRangeInt(int(opt.MinLen), int(opt.MaxLen))
+			l = integer.IntegerRangeInt(int(minLen), int(opt.MaxLen))
 		}
 
 		// 创建一个map
@@ -152,59 +147,30 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 		v.SetUint(uint64(u))
 		// string 类型
 	case reflect.String:
-		// 获取字段变量名
-		fieldName := sf.Name
+		var err error
+		var ok bool
 
-		// TODO 优化成map查表函数
-		if strings.Contains(strings.ToLower(fieldName), "url") {
-			v.SetString(urlx.URL())
-			return nil
-		}
-
-		// 如果字段名是Name，那么就随机生成一个名字
-		if strings.Contains(strings.ToLower(fieldName), "username") {
-			// TODO 需要修改
-			v.SetString(name.Name(name.WithChinese()))
-			return nil
-		}
-
-		// 昵称
-		if strings.Contains(strings.ToLower(fieldName), "nickname") {
-			v.SetString(name.Name(name.WithChinese()))
-			return nil
-		}
-
-		// 如果字段名是ID，那么就生成一个uuid
-		// 忽略大小写搜索id
-		if strings.Contains(strings.ToLower(fieldName), "id") {
-			v.SetString(gid.GID())
-			return nil
-		}
-
-		// 如果字段名是Time，那么就随机生成一个时间
-		if strings.Contains(strings.ToLower(fieldName), "time") {
-			v.SetString(timex.TimeRFC3339String(timex.WithMin(opt.Min), timex.WithMax(opt.Max)))
-			return nil
-		}
-
-		// 如果字段名是email，那么就随机生成一个email
-		if strings.Contains(strings.ToLower(fieldName), "email") {
-			e, err := email.Email()
-			if err != nil {
-				return err
+		var source []string
+		// 指定数据来源
+		for key, val := range opt.StringSource {
+			// TODO 这里是遍历，也需要要优化下
+			key = strings.ToLower(key)
+			if strings.Contains(strings.ToLower(sf.Name), key) {
+				source = val
+				goto next
 			}
-			v.SetString(e)
+		}
+
+		// 猜测下数据类型
+		if err, ok = guessStringType(v, sf, opt); err != nil {
+			return err
+		} else if !ok {
 			return nil
 		}
 
-		// 如果字段是country, 那么就随机生成一个国家
-		if strings.Contains(strings.ToLower(fieldName), "country") {
-			v.SetString(country.Country(opt.CountryChina))
-			return nil
-		}
-
+	next:
 		if _, ok := opt.MinMaxLenByField[sf.Name]; ok {
-			s, err := stringx.StringRange(opt.MinMaxLenByField[sf.Name].MinLen, opt.MinMaxLenByField[sf.Name].MaxLen)
+			s, err := stringx.StringRange(opt.MinMaxLenByField[sf.Name].MinLen, opt.MinMaxLenByField[sf.Name].MaxLen, stringx.WithSource(source))
 			if err != nil {
 				return err
 			}
@@ -212,7 +178,7 @@ func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
 			return nil
 		}
 
-		s, err := stringx.StringRange(opt.MinLen, opt.MaxLen)
+		s, err := stringx.StringRange(opt.MinLen, opt.MaxLen, stringx.WithSource(source))
 		if err != nil {
 			return err
 		}

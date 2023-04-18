@@ -35,11 +35,11 @@ type AllTypes struct {
 // 基础类型
 func Test_MockDataBasic(t *testing.T) {
 	var a AllTypes
-	MockData(&a)
+	err := MockData(&a)
+	assert.NoError(t, err)
 	all, err := json.Marshal(&a)
 	assert.NoError(t, err)
 	fmt.Printf("%s\n", all)
-
 }
 
 type MyType struct {
@@ -70,12 +70,14 @@ type ReferenceType struct {
 	UserName    string
 	NickName    string
 	Country     string
+	HeadPic     string
 }
 
 // 复合类型的测试
 func Test_MockData2(t *testing.T) {
 	var a ReferenceType
-	MockData(&a)
+	err := MockData(&a, WithContainsFieldSourceString("HeadPic", []string{"www.1.com", "www.2.com", "www.3.com"}))
+	assert.NoError(t, err)
 	all, err := json.Marshal(&a)
 	assert.NoError(t, err)
 	fmt.Printf("%s\n", all)
@@ -87,7 +89,8 @@ type TestEmail struct {
 
 func Test_MockEmail(t *testing.T) {
 	e := TestEmail{}
-	MockData(&e)
+	err := MockData(&e)
+	assert.NoError(t, err)
 	all, err := json.Marshal(&e)
 	assert.NoError(t, err)
 	fmt.Printf("%s\n", all)
@@ -100,7 +103,8 @@ type Test_MinMaxLenByField struct {
 
 func TestMinMaxLenByField(t *testing.T) {
 	e := Test_MinMaxLenByField{}
-	MockData(&e, WithMinMaxLenByField("S", 10, 20), WithMinMaxLenByField("Slice", 10, 20))
+	err := MockData(&e, WithMinMaxLenByField("S", 10, 20), WithMinMaxLenByField("Slice", 10, 20))
+	assert.NoError(t, err)
 	// 检查下生成的长度是否在10-20之间
 	assert.True(t, len(e.S) >= 10 && len(e.S) <= 20)
 	assert.True(t, len(e.Slice) >= 10 && len(e.S) <= 20)

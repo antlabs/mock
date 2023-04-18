@@ -1,10 +1,13 @@
 package stringx
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestString(t *testing.T) {
-	fmt.Println(StringRange(10, 10))
+	s, err := StringRange(10, 10)
+	assert.Nil(t, err)
+	assert.Equal(t, 10, len(s))
 }

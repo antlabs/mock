@@ -7,8 +7,10 @@ import (
 	"time"
 )
 
-var intRnd = rand.New(rand.NewSource(time.Now().UnixNano()))
-var mux = sync.Mutex{}
+var (
+	intRnd = rand.New(rand.NewSource(time.Now().UnixNano()))
+	mux    = sync.Mutex{}
+)
 
 // 随机生成一个整数,范围在[min, max]之间
 func IntegerRangeInt(min, max int) int {
@@ -16,7 +18,7 @@ func IntegerRangeInt(min, max int) int {
 	mux.Lock()
 	defer mux.Unlock()
 
-	n := max - min
+	n := max + 1 - min
 	return intRnd.Intn(n) + min
 }
 

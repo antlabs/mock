@@ -47,11 +47,10 @@ func init() {
 
 		countrySlice = append(countrySlice, country{EnName: record[1], ZhName: record[2]})
 	}
-
 }
 
 func Country(china bool) string {
-	pos := integer.IntegerRangeInt(0, len(countrySlice))
+	pos := integer.IntegerRangeInt(0, len(countrySlice)-1)
 	if china {
 		return countrySlice[pos].ZhName
 	}

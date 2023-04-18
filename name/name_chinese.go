@@ -12,9 +12,11 @@ type Options struct {
 	IsChinese bool
 }
 
-var xings []string
-var nans []string
-var nvs []string
+var (
+	xings []string
+	nans  []string
+	nvs   []string
+)
 
 func init() {
 	xings = strings.Split(xing, "\n")
@@ -45,7 +47,7 @@ func CName() string {
 		mings = nvs
 	}
 
-	xingPos := integer.IntegerRangeInt(0, len(xings))
-	mingPos := integer.IntegerRangeInt(0, len(mings))
+	xingPos := integer.IntegerRangeInt(0, len(xings)-1)
+	mingPos := integer.IntegerRangeInt(0, len(mings)-1)
 	return xings[xingPos] + mings[mingPos]
 }
