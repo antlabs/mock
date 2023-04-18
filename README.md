@@ -145,13 +145,14 @@ mock.WithMaxLen()
 ### 3.5 设置数据最大长度`WithMinLen`
 ```go
 mock.WithMaxLen()
+```
 
 ### 3.6 设置数值的最大值`WithMax`
-```
+```go
 mock.WithMax()
 ```
 
 ### 3.7 设置数值的最大值`WithMin`
-```
+```go
 mock.WithMin()
 ```
