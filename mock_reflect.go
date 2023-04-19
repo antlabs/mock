@@ -17,6 +17,7 @@ func MockData(x any, opts ...Option) error {
 	}
 
 	opt := &Options{}
+	opt.MinLen = 1
 	for _, o := range opts {
 		o(opt)
 	}
@@ -36,6 +37,11 @@ func defaultOptions(opt *Options) {
 }
 
 func mockData(v reflect.Value, sf reflect.StructField, opt *Options) error {
+	// 忽略
+	if len(opt.IgnoreFields) > 0 && len(sf.Name) > 0 && opt.IgnoreFields[sf.Name] {
+		return nil
+	}
+
 	switch v.Kind() {
 	// 指针类型，需要先获取指针指向的值
 	case reflect.Ptr:

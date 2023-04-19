@@ -23,6 +23,10 @@ type Options struct {
 	MinMaxLenByField map[string]MinMax
 	// country 用中文还是英文
 	CountryChina bool
+	// 默认是mock
+	TagName string
+	// 设置忽略的字段名
+	IgnoreFields map[string]bool
 }
 
 type Option func(*Options)
@@ -81,5 +85,25 @@ func WithContainsFieldSourceString(field string, source []string) Option {
 		}
 
 		o.StringSource[field] = source
+	}
+}
+
+// 设置tag名
+// TODO实现
+func WithTag(tag string) Option {
+	return func(o *Options) {
+		o.TagName = tag
+	}
+}
+
+// 设置忽略的字段名
+func WithIgnoreFields(fields ...string) Option {
+	return func(o *Options) {
+		if o.IgnoreFields == nil {
+			o.IgnoreFields = make(map[string]bool)
+		}
+		for _, s := range fields {
+			o.IgnoreFields[s] = true
+		}
 	}
 }

@@ -3,6 +3,16 @@
 [![codecov](https://codecov.io/gh/antlabs/mock/branch/master/graph/badge.svg)](https://codecov.io/gh/antlabs/mock)
 
 生成mock数据，第一个大版本使用反射填充数据。   
+## 支持的类型有
+* uint8/uint16/uint32/uint64
+* int8/int16/int32/int64
+* slice
+* map
+* time.Time
+* 人名
+* 国家名
+* ...更多
+
 ## 一、install
 ```
 go get github.com/antlabs/mock
@@ -37,75 +47,75 @@ type ReferenceType struct {
 	UserName    string
 	NickName    string
 	Country     string
+	Ipv4        string
 }
 var a ReferenceType
 mock.MockData(&a)
 all, err := json.Marshal(&a)
 //输出如下
-
 // {
-//   "Id": "2db4f77a-ada2-47cd-9fa5-2d3d7d759d18",
+//   "Id": "45b00376-ebf0-4196-9c95-6a8aa25c88c0",
 //   "MyType": {
 //     "Slice": [
-//       1681352613,
-//       20691731,
-//       681305396,
-//       1674447608,
-//       266532997,
-//       1292383940
+//       1400477113,
+//       1591736785,
+//       720060954,
+//       259088419,
+//       1728262781,
+//       1452739972,
+//       1171863610,
+//       2007929494,
+//       346720360
 //     ],
 //     "Map": {
-//       "2": "afcb",
-//       "4": "f2",
-//       "569": "fd2",
-//       "a": "b59b48",
-//       "a8792": "cee",
-//       "bdaf35": "0d19dfe4",
-//       "be2a50b4": "f19b56d8"
+//       "012f4ecd": "5ad0378fc1",
+//       "01415828fb": "bcb4e437",
+//       "1cf8ef3": "a0189d",
+//       "2": "301a2e456d",
+//       "4012ad12": "6f4cee5",
+//       "4d5ca43": "088c3",
+//       "d": "58",
+//       "e87e3f": "ecc601a"
 //     }
 //   },
 //   "Person": {
-//     "Name": "ac0a61a4",
-//     "Age": 337830828,
+//     "Name": "c9cc8ae",
+//     "Age": 383225028,
 //     "Address": {
-//       "City": "",
-//       "Country": "U.S. Outlying Islands"
+//       "City": "d2700",
+//       "Country": "St. Kitts & Nevis"
 //     }
 //   },
 //   "MyTypeP": {
 //     "Slice": [
-//       1807852194,
-//       2141777709,
-//       92514607,
-//       1286243933
+//       1692231780,
+//       942566115,
+//       1429602187,
+//       370936121,
+//       450946004
 //     ],
 //     "Map": {
-//       "34": "82ab6bf60",
-//       "5fa6d": "b",
-//       "636484814d": "",
-//       "77": "da",
-//       "82": "407e",
-//       "85784638": "",
-//       "a11b8a68": "00c9403dc",
-//       "e28c": "b37424e"
+//       "395e33e6": "5e3",
+//       "46470d59c": "608ca0e8",
+//       "804e4": "2",
+//       "a": "40f751",
+//       "b0dd": "933",
+//       "eb5a28060a": "4ac6728",
+//       "f2": "84d6bf9ece"
 //     }
 //   },
-//   "CreateTime": "2034-11-29T08:17:35+08:00",
+//   "CreateTime": "2024-09-20T18:45:02+08:00",
 //   "PointerList": [
-//     895889511,
-//     69415086,
-//     952093756,
-//     381246645,
-//     775471733,
-//     121055351,
-//     2032148785,
-//     697090480
+//     1717968446,
+//     1265293376
 //   ],
-//   "Email": "c15a950@qq.com",
-//   "URL": "http://github.com/antlabs/a0c/6d/4/d021/297/1bd/d1/b2dc/f25?3e=3",
-//   "UserName": "寇舒舒",
-//   "NickName": "谏静雯",
-//   "Country": "Norway"
+//   "Email": "74fea6@hotmail.com",
+//   "URL": "https://github.com/antlabs/30/0/ce1/ee16/0/c07f/3a67/25/dc3/6/cae/4/cc/2b9ce/10bd1/e9059/33/31a18/7/6/bc/b?0495=5a",
+//   "UserName": "檀娜",
+//   "NickName": "全志强",
+//   "Country": "Gibraltar",
+//   "HeadPic": "www.3.com",
+//   "Ipv4": "29.40.97.24"
 // }
 ```
 ## 三、WithXXX各种配置函数
@@ -155,4 +165,10 @@ mock.WithMax()
 ### 3.7 设置数值的最大值`WithMin`
 ```go
 mock.WithMin()
+```
+### 3.8 设置忽略的字段名
+字段有时候是由protobuf或者thrift生成，不能直接修改tag，可以使用mock.WithIgnoreFields接口忽略
+```go
+// 设置忽略的字段名
+mock.WithIgnoreFields([]string{"Country", "NickName"})
 ```

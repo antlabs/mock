@@ -71,6 +71,7 @@ type ReferenceType struct {
 	NickName    string
 	Country     string
 	HeadPic     string
+	Ipv4        string
 }
 
 // 复合类型的测试
