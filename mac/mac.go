@@ -6,7 +6,7 @@ import (
 )
 
 // mac 地址
-// 目前既支持mac 48格式的生成
+// 目前仅支持mac 48格式的生成
 func Mac() string {
 	mac := make([]byte, 6)
 	rand.Read(mac)
