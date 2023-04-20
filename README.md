@@ -11,6 +11,7 @@
 * time.Time
 * 人名
 * 国家名
+* mac地址
 * ...更多
 
 ## 一、install
