@@ -27,6 +27,12 @@ type Options struct {
 	TagName string
 	// 设置忽略的字段名
 	IgnoreFields map[string]bool
+	// 省份
+	Province string
+	// 城市
+	City string
+	// 区
+	// District string
 }
 
 type Option func(*Options)

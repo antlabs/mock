@@ -3,6 +3,7 @@ package city
 import (
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"sort"
 
 	"github.com/antlabs/mock/integer"
@@ -67,15 +68,17 @@ func init() {
 				city.Name = province.Name
 			}
 
-			tmpCities = append(tmpCities, nameAndCode{Name: city.Name, Code: city.Code, Parent: len(provinces)})
+			tmpCities = append(tmpCities, nameAndCode{Name: city.Name, Code: city.Code, Parent: len(provinces) - 1})
 
 			// 创建一个临时的区列表
 			tmpDistricts := []nameAndCode{}
 			for _, district := range city.Children {
-				tmpDistricts = append(tmpDistricts, nameAndCode{Name: district.Name, Code: district.Code, Parent: len(cities)})
+				tmpDistricts = append(tmpDistricts, nameAndCode{Name: district.Name, Code: district.Code, Parent: len(cities) - 1})
 			}
 			tmpCities[len(tmpCities)-1].Children = tmpDistricts
-			// citiesAndDistricts[city.Name] = tmpDistricts
+
+			// 所有的区
+			districts = append(districts, tmpDistricts...)
 		}
 
 		provinces[len(provinces)-1].Children = tmpCities
@@ -107,14 +110,13 @@ func City(opts ...Option) string {
 
 		if i < len(data) && data[i].Name == opt.ProvinceName {
 			tempCities = data[i].Children
+		} else {
+			tempCities = cities
 		}
-		// else {
-		// 	// x is not present in data,
-		// 	// but i is the index where it would be inserted.
-		// }
 	}
 
-	return tempCities[integer.IntegerRangeInt(0, len(tempCities)-1)].Name
+	cityItem := tempCities[integer.IntegerRangeInt(0, len(tempCities)-1)]
+	return cityItem.Name
 }
 
 func District(opts ...Option) string {
@@ -132,9 +134,17 @@ func District(opts ...Option) string {
 
 		if i < len(data) && data[i].Name == opt.CityName {
 			tempDistrict = data[i].Children
+		} else {
+			tempDistrict = districts
 		}
 	}
-	return tempDistrict[integer.IntegerRangeInt(0, len(tempDistrict)-1)].Name
+
+	if len(tempDistrict) == 0 {
+		panic(fmt.Sprintf("temp district is 0:city name is (%s)", opt.CityName))
+	}
+	districtsItem := tempDistrict[integer.IntegerRangeInt(0, len(tempDistrict)-1)]
+
+	return districtsItem.Name
 }
 
 func ProvinceCode() string {
