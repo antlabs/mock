@@ -48,20 +48,14 @@ type MyType struct {
 }
 
 type Person struct {
-	Name    string
-	Age     int
-	Address Address
-}
-
-type Address struct {
-	City    string
-	Country string
+	Name string
+	Age  int
 }
 
 type ReferenceType struct {
+	Person      Person
 	Id          string
 	MyType      MyType
-	Person      Person
 	MyTypeP     *MyType
 	CreateTime  string
 	PointerList []*int
@@ -72,6 +66,12 @@ type ReferenceType struct {
 	Country     string
 	HeadPic     string
 	Ipv4        string
+	// 省
+	Province string
+	// 市
+	City string
+	// 区
+	District string
 }
 
 // 复合类型的测试

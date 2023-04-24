@@ -9,6 +9,7 @@ import (
 	"github.com/antlabs/mock/integer"
 )
 
+// TODO: 数据来源，以及清洗脚本, ci自动化
 type country struct {
 	EnName string
 	ZhName string
